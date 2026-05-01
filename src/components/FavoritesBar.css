@@ -1,0 +1,83 @@
+.favorites-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px;
+  background-color: var(--bg-panel-inner);
+  border-bottom: 1px solid var(--border-neon);
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+.favorites-bar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.favorites-label {
+  color: var(--text-label);
+  font-size: 13px;
+  font-weight: bold;
+  margin-right: 12px;
+  white-space: nowrap;
+}
+
+.favorites-list {
+  display: flex;
+  gap: 10px;
+}
+
+.favorite-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-dim);
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.favorite-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--text-secondary);
+}
+
+.favorite-item.active {
+  background-color: rgba(0, 204, 255, 0.15);
+  border-color: var(--color-cyan);
+}
+
+.favorite-item.active .fav-code {
+  color: var(--color-cyan);
+}
+
+.fav-code {
+  font-weight: bold;
+  font-family: var(--font-mono);
+  margin-right: 6px;
+  color: var(--text-primary);
+}
+
+.fav-name {
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-right: 8px;
+}
+
+.fav-remove {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.fav-remove:hover {
+  opacity: 1;
+  color: var(--color-up);
+}

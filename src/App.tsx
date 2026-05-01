@@ -20,6 +20,8 @@ import { buildDashboardFromRealData, historyToKLineData } from './services/techn
 import { mockData, klineData as mockKlineData, DashboardData, KLineDataPoint } from './data/mockData';
 import './App.css';
 
+import FavoritesBar from './components/FavoritesBar';
+
 const App: React.FC = () => {
   const [stockCode, setStockCode] = useState('2330');
   const [dashboardData, setDashboardData] = useState<DashboardData>(mockData);
@@ -28,7 +30,44 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isRealData, setIsRealData] = useState(false);
 
-  // 載入真實資料
+  // Raw data state for partial updates
+  const [rawHistory, setRawHistory] = useState<any[]>([]);
+  const [rawInst, setRawInst] = useState<any>(null);
+
+  // Favorites state
+  const [favorites, setFavorites] = useState<{ code: string, name: string }[]>(() => {
+    try {
+      const saved = localStorage.getItem('stockAI_favorites');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Auto-refresh state
+  const [autoRefresh, setAutoRefresh] = useState(false);
+
+  // Save favorites to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('stockAI_favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = useCallback(() => {
+    setFavorites(prev => {
+      const isFav = prev.some(f => f.code === stockCode);
+      if (isFav) {
+        return prev.filter(f => f.code !== stockCode);
+      } else {
+        return [...prev, { code: stockCode, name: dashboardData.stock.name }];
+      }
+    });
+  }, [stockCode, dashboardData.stock.name]);
+
+  const removeFavorite = useCallback((codeToRemove: string) => {
+    setFavorites(prev => prev.filter(f => f.code !== codeToRemove));
+  }, []);
+
+  // 載入真實資料 (完整載入)
   const loadStockData = useCallback(async (code: string) => {
     setLoading(true);
     setError(null);
@@ -44,6 +83,9 @@ const App: React.FC = () => {
       if (history.length === 0) {
         throw new Error('無歷史資料，請確認股票代碼是否正確');
       }
+
+      setRawHistory(history);
+      setRawInst(institutional);
 
       // 從真實資料建立 DashboardData
       const data = buildDashboardFromRealData(quote, history, institutional);
@@ -61,6 +103,29 @@ const App: React.FC = () => {
     }
   }, []);
 
+  // 背景更新報價 (只抓 Quote)
+  const refreshQuoteOnly = useCallback(async () => {
+    if (!isRealData || rawHistory.length === 0) return;
+    try {
+      const quote = await fetchQuote(stockCode);
+      const data = buildDashboardFromRealData(quote, rawHistory, rawInst);
+      setDashboardData(data);
+    } catch (err) {
+      console.error('背景更新報價失敗:', err);
+    }
+  }, [stockCode, isRealData, rawHistory, rawInst]);
+
+  // Auto-refresh interval
+  useEffect(() => {
+    let intervalId: number;
+    if (autoRefresh) {
+      intervalId = window.setInterval(refreshQuoteOnly, 10000); // 10秒輪詢
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [autoRefresh, refreshQuoteOnly]);
+
   // 初始載入
   useEffect(() => {
     loadStockData('2330');
@@ -71,6 +136,7 @@ const App: React.FC = () => {
   }, [loadStockData]);
 
   const d = dashboardData;
+  const isCurrentFavorite = favorites.some(f => f.code === stockCode);
 
   return (
     <div className="dashboard" id="stock-dashboard">
@@ -81,9 +147,19 @@ const App: React.FC = () => {
             currentCode={stockCode}
             onSearch={handleSearch}
             loading={loading}
+            isFavorite={isCurrentFavorite}
+            onToggleFavorite={toggleFavorite}
+            autoRefresh={autoRefresh}
+            onToggleAutoRefresh={() => setAutoRefresh(!autoRefresh)}
           />
           <Header stock={d.stock} />
         </div>
+        <FavoritesBar 
+          favorites={favorites} 
+          currentCode={stockCode} 
+          onSelect={handleSearch} 
+          onRemove={removeFavorite} 
+        />
       </div>
 
       {/* Loading overlay */}

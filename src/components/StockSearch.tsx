@@ -5,9 +5,21 @@ interface StockSearchProps {
   currentCode: string;
   onSearch: (code: string) => void;
   loading: boolean;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
+  autoRefresh?: boolean;
+  onToggleAutoRefresh?: () => void;
 }
 
-const StockSearch: React.FC<StockSearchProps> = ({ currentCode, onSearch, loading }) => {
+const StockSearch: React.FC<StockSearchProps> = ({ 
+  currentCode, 
+  onSearch, 
+  loading,
+  isFavorite = false,
+  onToggleFavorite,
+  autoRefresh = false,
+  onToggleAutoRefresh
+}) => {
   const [inputValue, setInputValue] = useState(currentCode);
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
@@ -54,7 +66,27 @@ const StockSearch: React.FC<StockSearchProps> = ({ currentCode, onSearch, loadin
               '查詢'
             )}
           </button>
+
+          {onToggleFavorite && (
+            <button 
+              type="button" 
+              className={`fav-toggle-btn ${isFavorite ? 'active' : ''}`}
+              onClick={onToggleFavorite}
+              title={isFavorite ? '從最愛移除' : '加入最愛'}
+            >
+              {isFavorite ? '⭐' : '☆'}
+            </button>
+          )}
         </div>
+
+        {onToggleAutoRefresh && (
+          <div className="auto-refresh-toggle" onClick={onToggleAutoRefresh} title="開啟後每10秒自動更新報價">
+            <span className={`toggle-label ${autoRefresh ? 'active' : ''}`}>🔄 自動更新</span>
+            <div className={`toggle-switch ${autoRefresh ? 'on' : 'off'}`}>
+              <div className="toggle-slider"></div>
+            </div>
+          </div>
+        )}
       </form>
     </div>
   );

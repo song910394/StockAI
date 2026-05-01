@@ -26,6 +26,43 @@ async function fetchJsonSafe(url, options) {
 }
 
 // ============================================================
+// Helper: 股票中文名稱快取 (TSE + OTC)
+// ============================================================
+const stockNamesCache = new Map();
+
+async function updateStockNamesCache() {
+  try {
+    // 抓取上市
+    const tseData = await fetchJsonSafe('https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL', { 
+      headers: { 'User-Agent': 'Mozilla/5.0' } 
+    });
+    if (tseData && Array.isArray(tseData)) {
+      tseData.forEach(item => {
+        if (item.Code && item.Name) stockNamesCache.set(item.Code, item.Name);
+      });
+    }
+    // 抓取上櫃
+    const otcData = await fetchJsonSafe('https://www.tpex.org.tw/openapi/v1/tpex_mainboard_quotes', { 
+      headers: { 'User-Agent': 'Mozilla/5.0' } 
+    });
+    if (otcData && Array.isArray(otcData)) {
+      otcData.forEach(item => {
+        if (item.SecuritiesCompanyCode && item.CompanyName) {
+          stockNamesCache.set(item.SecuritiesCompanyCode, item.CompanyName);
+        }
+      });
+    }
+    console.log(`✅ 股票名稱快取更新完成，共 ${stockNamesCache.size} 筆`);
+  } catch (err) {
+    console.error('更新股票名稱快取失敗:', err.message);
+  }
+}
+
+// 啟動時立刻更新一次，之後每天更新一次
+updateStockNamesCache();
+setInterval(updateStockNamesCache, 24 * 60 * 60 * 1000);
+
+// ============================================================
 // Helper: 判斷上市(tse) or 上櫃(otc) 並加入 Yahoo 備援
 // ============================================================
 async function fetchWithFallback(code) {
@@ -84,6 +121,7 @@ app.get('/api/quote/:code', async (req, res) => {
     }
 
     const d = result.data;
+    const stockName = stockNamesCache.get(code) || d.n || code;
     let quote;
 
     if (result.source === 'twse') {
@@ -99,7 +137,7 @@ app.get('/api/quote/:code', async (req, res) => {
 
       quote = {
         code: d.c,
-        name: d.n,
+        name: stockName,
         market: result.market,
         price,
         open: parseFloat(d.o) || 0,
@@ -139,7 +177,7 @@ app.get('/api/quote/:code', async (req, res) => {
 
       quote = {
         code: code,
-        name: code, // Yahoo doesn't provide Chinese shortname easily
+        name: stockName,
         market: result.market,
         price,
         open: d.regularMarketPrice || price, // Yahoo meta might not have open, fallback to price
