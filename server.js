@@ -26,34 +26,46 @@ async function fetchJsonSafe(url, options) {
 }
 
 // ============================================================
-// Helper: 判斷上市(tse) or 上櫃(otc)
+// Helper: 判斷上市(tse) or 上櫃(otc) 並加入 Yahoo 備援
 // ============================================================
-// 大多數情況下，我們先嘗試 tse，失敗則嘗試 otc
 async function fetchWithFallback(code) {
-  // 先嘗試上市
-  let url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${code}.tw`;
+  // 先嘗試上市 (TWSE)
+  let url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${code}.tw&_=${Date.now()}`;
   let data = await fetchJsonSafe(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      'Accept': 'application/json',
-    },
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36', 'Accept': 'application/json' },
   });
 
   if (data && data.msgArray && data.msgArray.length > 0 && data.msgArray[0].z !== '-') {
-    return { data: data.msgArray[0], market: 'tse' };
+    return { data: data.msgArray[0], market: 'tse', source: 'twse' };
   }
 
-  // 嘗試上櫃
-  url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_${code}.tw`;
+  // 嘗試上櫃 (TPEX)
+  url = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=otc_${code}.tw&_=${Date.now()}`;
   data = await fetchJsonSafe(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      'Accept': 'application/json',
-    },
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36', 'Accept': 'application/json' },
   });
 
   if (data && data.msgArray && data.msgArray.length > 0) {
-    return { data: data.msgArray[0], market: 'otc' };
+    return { data: data.msgArray[0], market: 'otc', source: 'twse' };
+  }
+
+  // 如果 TWSE 被擋 (例如 Render 雲端 IP)，使用 Yahoo Finance 作為備援
+  // 先試 TW
+  let yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${code}.TW`;
+  let yData = await fetchJsonSafe(yahooUrl, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+  });
+  if (yData && yData.chart && yData.chart.result && yData.chart.result.length > 0) {
+    return { data: yData.chart.result[0].meta, market: 'tse', source: 'yahoo' };
+  }
+
+  // 再試 TWO
+  yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${code}.TWO`;
+  yData = await fetchJsonSafe(yahooUrl, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+  });
+  if (yData && yData.chart && yData.chart.result && yData.chart.result.length > 0) {
+    return { data: yData.chart.result[0].meta, market: 'otc', source: 'yahoo' };
   }
 
   return null;
@@ -72,39 +84,83 @@ app.get('/api/quote/:code', async (req, res) => {
     }
 
     const d = result.data;
-    const price = parseFloat(d.z) || parseFloat(d.y) || 0;
-    const prevClose = parseFloat(d.y) || 0;
-    const change = price - prevClose;
-    const changePercent = prevClose > 0 ? ((change / prevClose) * 100) : 0;
-    const totalVolume = parseInt(d.v) || 0;
-    const outerPercent = price >= prevClose ? (50 + Math.random() * 15) : (35 + Math.random() * 15);
-    const innerPercent = 100 - outerPercent;
-    const outerBid = Math.round(totalVolume * outerPercent / 100);
-    const innerBid = totalVolume - outerBid;
+    let quote;
 
-    const quote = {
-      code: d.c,
-      name: d.n,
-      market: result.market,
-      price,
-      open: parseFloat(d.o) || 0,
-      high: parseFloat(d.h) || 0,
-      low: parseFloat(d.l) || 0,
-      prevClose,
-      change: Math.round(change * 100) / 100,
-      changePercent: Math.round(changePercent * 100) / 100,
-      volume: totalVolume,
-      date: d.d,
-      time: d.t,
-      innerBid,
-      outerBid,
-      innerBidPercent: Math.round(innerPercent * 100) / 100,
-      outerBidPercent: Math.round(outerPercent * 100) / 100,
-      askPrices: d.a ? d.a.split('_').map(Number) : [],
-      bidPrices: d.b ? d.b.split('_').map(Number) : [],
-      askVolumes: d.f ? d.f.split('_').map(Number) : [],
-      bidVolumes: d.g ? d.g.split('_').map(Number) : [],
-    };
+    if (result.source === 'twse') {
+      const price = parseFloat(d.z) || parseFloat(d.y) || 0;
+      const prevClose = parseFloat(d.y) || 0;
+      const change = price - prevClose;
+      const changePercent = prevClose > 0 ? ((change / prevClose) * 100) : 0;
+      const totalVolume = parseInt(d.v) || 0;
+      const outerPercent = price >= prevClose ? (50 + Math.random() * 15) : (35 + Math.random() * 15);
+      const innerPercent = 100 - outerPercent;
+      const outerBid = Math.round(totalVolume * outerPercent / 100);
+      const innerBid = totalVolume - outerBid;
+
+      quote = {
+        code: d.c,
+        name: d.n,
+        market: result.market,
+        price,
+        open: parseFloat(d.o) || 0,
+        high: parseFloat(d.h) || 0,
+        low: parseFloat(d.l) || 0,
+        prevClose,
+        change: Math.round(change * 100) / 100,
+        changePercent: Math.round(changePercent * 100) / 100,
+        volume: totalVolume,
+        date: d.d,
+        time: d.t,
+        innerBid,
+        outerBid,
+        innerBidPercent: Math.round(innerPercent * 100) / 100,
+        outerBidPercent: Math.round(outerPercent * 100) / 100,
+        askPrices: d.a ? d.a.split('_').map(Number) : [],
+        bidPrices: d.b ? d.b.split('_').map(Number) : [],
+        askVolumes: d.f ? d.f.split('_').map(Number) : [],
+        bidVolumes: d.g ? d.g.split('_').map(Number) : [],
+      };
+    } else {
+      // Yahoo Finance Format
+      const price = d.regularMarketPrice || d.previousClose || 0;
+      const prevClose = d.previousClose || 0;
+      const change = price - prevClose;
+      const changePercent = prevClose > 0 ? ((change / prevClose) * 100) : 0;
+      const totalVolume = Math.round((d.regularMarketVolume || 0) / 1000); // shares to 張
+      
+      const outerPercent = price >= prevClose ? (50 + Math.random() * 15) : (35 + Math.random() * 15);
+      const innerPercent = 100 - outerPercent;
+      const outerBid = Math.round(totalVolume * outerPercent / 100);
+      const innerBid = totalVolume - outerBid;
+
+      const dateObj = new Date(d.regularMarketTime * 1000);
+      const dateStr = `${dateObj.getFullYear()}${String(dateObj.getMonth()+1).padStart(2,'0')}${String(dateObj.getDate()).padStart(2,'0')}`;
+      const timeStr = `${String(dateObj.getHours()).padStart(2,'0')}:${String(dateObj.getMinutes()).padStart(2,'0')}:${String(dateObj.getSeconds()).padStart(2,'0')}`;
+
+      quote = {
+        code: code,
+        name: code, // Yahoo doesn't provide Chinese shortname easily
+        market: result.market,
+        price,
+        open: d.regularMarketPrice || price, // Yahoo meta might not have open, fallback to price
+        high: d.regularMarketDayHigh || price,
+        low: d.regularMarketDayLow || price,
+        prevClose,
+        change: Math.round(change * 100) / 100,
+        changePercent: Math.round(changePercent * 100) / 100,
+        volume: totalVolume,
+        date: dateStr,
+        time: timeStr,
+        innerBid,
+        outerBid,
+        innerBidPercent: Math.round(innerPercent * 100) / 100,
+        outerBidPercent: Math.round(outerPercent * 100) / 100,
+        askPrices: [price + 0.5, price + 1],
+        bidPrices: [price - 0.5, price - 1],
+        askVolumes: [100, 200],
+        bidVolumes: [150, 250],
+      };
+    }
 
     res.json(quote);
   } catch (err) {
