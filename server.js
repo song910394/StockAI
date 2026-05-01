@@ -233,6 +233,37 @@ app.get('/api/history/:code', async (req, res) => {
       }
     }
 
+    // 如果全部都抓不到 (例如被證交所擋 IP)，啟動 Yahoo Finance 備援
+    if (allData.length === 0) {
+      let yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${code}.TW?range=${months}mo&interval=1d`;
+      let yData = await fetchJsonSafe(yUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } });
+      
+      if (!yData || !yData.chart || !yData.chart.result) {
+        yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${code}.TWO?range=${months}mo&interval=1d`;
+        yData = await fetchJsonSafe(yUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } });
+      }
+
+      if (yData && yData.chart && yData.chart.result && yData.chart.result.length > 0) {
+        const resData = yData.chart.result[0];
+        const timestamps = resData.timestamp || [];
+        const quote = resData.indicators.quote[0];
+        
+        for (let j = 0; j < timestamps.length; j++) {
+          if (quote.close[j] === null) continue; // skip invalid days
+          const dateObj = new Date(timestamps[j] * 1000);
+          const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
+          allData.push({
+            date: dateStr,
+            volume: Math.round((quote.volume[j] || 0) / 1000), // Yahoo returns shares
+            open: Math.round((quote.open[j] || 0) * 100) / 100,
+            high: Math.round((quote.high[j] || 0) * 100) / 100,
+            low: Math.round((quote.low[j] || 0) * 100) / 100,
+            close: Math.round((quote.close[j] || 0) * 100) / 100,
+          });
+        }
+      }
+    }
+
     allData.sort((a, b) => a.date.localeCompare(b.date));
     res.json({ code, data: allData });
   } catch (err) {
