@@ -1,0 +1,51 @@
+/* MainForceWarning.css */
+.main-force-section {
+  display: flex;
+  gap: var(--gap-sm);
+  height: 100%;
+}
+
+.mf-warning-panel {
+  flex: 1;
+}
+
+.mf-winrate-panel {
+  flex: 1;
+}
+
+.gauge-container {
+  position: relative;
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gauge-svg {
+  width: 120px;
+  height: 70px;
+}
+
+.gauge-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-top: -10px;
+}
+
+.gauge-number {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--color-yellow);
+  text-shadow: 0 0 12px rgba(255, 220, 0, 0.4);
+}
+
+.gauge-percent {
+  font-size: 14px;
+  color: var(--color-yellow);
+  margin-left: 2px;
+}
+
+.gauge-label {
+  margin-top: 4px;
+}

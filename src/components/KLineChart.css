@@ -1,0 +1,54 @@
+/* KLineChart.css */
+.kline-chart-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.kline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border-dim);
+  flex-shrink: 0;
+}
+
+.kline-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-title);
+}
+
+.ma-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.ma-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ma-dot {
+  width: 10px;
+  height: 3px;
+  border-radius: 1px;
+}
+
+.kline-ohlc-info {
+  display: flex;
+  gap: 16px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(0,100,180,0.08);
+  flex-shrink: 0;
+}
+
+.kline-ohlc-info .font-mono {
+  font-weight: 600;
+}

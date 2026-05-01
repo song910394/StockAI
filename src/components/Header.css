@@ -1,0 +1,163 @@
+/* Header.css */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, #0c1a30 0%, #081422 100%);
+  border: 1px solid var(--border-neon);
+  border-radius: 4px;
+  padding: 8px 16px;
+  gap: 20px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+}
+
+.stock-code-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stock-code {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--color-cyan);
+  letter-spacing: 2px;
+}
+
+.stock-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stock-price-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.stock-price {
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1;
+  text-shadow: 0 0 12px currentColor;
+}
+
+.stock-change {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+/* Center */
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.header-info-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.header-info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-info-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.header-info-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Right */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+}
+
+.bid-ask-summary {
+  display: flex;
+  gap: 16px;
+}
+
+.bid-info {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.bid-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.bid-value {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.bid-percent {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.bid-ask-ratio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.ratio-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.ratio-bar-container {
+  display: flex;
+  width: 120px;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #1a1a2e;
+}
+
+.ratio-bar {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.ratio-bar-inner {
+  background: linear-gradient(90deg, #006600, #00cc00);
+}
+
+.ratio-bar-outer {
+  background: linear-gradient(90deg, #cc0000, #ff3333);
+}
+
+.ratio-value {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}

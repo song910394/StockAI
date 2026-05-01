@@ -1,0 +1,47 @@
+/* NextDayScenarios.css */
+.scenarios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 6px 8px !important;
+}
+
+.scenario-card {
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+.scenario-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.scenario-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.scenario-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.scenario-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.scenario-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}

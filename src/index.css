@@ -1,0 +1,304 @@
+/* ===================================================
+   Stock AI Dashboard - Global Design System
+   =================================================== */
+
+:root {
+  /* === Color Palette === */
+  --bg-primary: #050a15;
+  --bg-secondary: #0a1628;
+  --bg-panel: #0c1a2e;
+  --bg-panel-inner: #081422;
+  --bg-header: #0a1225;
+
+  /* Borders */
+  --border-neon: rgba(0, 140, 255, 0.45);
+  --border-neon-bright: rgba(0, 180, 255, 0.7);
+  --border-dim: rgba(0, 100, 180, 0.25);
+
+  /* Text */
+  --text-primary: #e8edf5;
+  --text-secondary: #8899aa;
+  --text-dim: #556677;
+  --text-title: #4dc8ff;
+  --text-label: #77aacc;
+
+  /* Stock Colors (Taiwan Standard) */
+  --color-up: #ff3333;
+  --color-down: #00dd00;
+  --color-flat: #cccccc;
+
+  /* Accent */
+  --color-yellow: #ffdd00;
+  --color-orange: #ff8800;
+  --color-cyan: #00ccff;
+  --color-purple: #bb66ff;
+  --color-magenta: #ff44aa;
+  --color-white: #ffffff;
+  --color-green-text: #44ff44;
+  --color-red-text: #ff4444;
+
+  /* MA Lines */
+  --ma5-color: #ffffff;
+  --ma20-color: #ffdd00;
+  --ma60-color: #ff44aa;
+
+  /* Inner/Outer Bid */
+  --inner-bid-color: #44ff44;
+  --outer-bid-color: #ff4444;
+
+  /* Chip Analysis */
+  --chip-buy: #ff3333;
+  --chip-sell: #00dd00;
+
+  /* Glow effects */
+  --glow-blue: 0 0 8px rgba(0, 150, 255, 0.3);
+  --glow-red: 0 0 8px rgba(255, 50, 50, 0.3);
+  --glow-green: 0 0 8px rgba(0, 220, 0, 0.3);
+
+  /* Typography */
+  --font-main: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+  --font-digital: 'Orbitron', 'JetBrains Mono', monospace;
+
+  /* Spacing */
+  --gap-xs: 3px;
+  --gap-sm: 6px;
+  --gap-md: 10px;
+  --gap-lg: 14px;
+}
+
+/* === Reset === */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 12px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* === Panel Styles === */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-neon);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-neon-bright), transparent);
+  opacity: 0.6;
+}
+
+.panel-title {
+  background: linear-gradient(180deg, rgba(0, 100, 180, 0.25) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border-dim);
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-title);
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.panel-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 12px;
+  background: var(--color-cyan);
+  border-radius: 1px;
+}
+
+.panel-body {
+  padding: 6px 10px;
+}
+
+/* === Utility Classes === */
+.text-up {
+  color: var(--color-up) !important;
+}
+
+.text-down {
+  color: var(--color-down) !important;
+}
+
+.text-yellow {
+  color: var(--color-yellow) !important;
+}
+
+.text-cyan {
+  color: var(--color-cyan) !important;
+}
+
+.text-white {
+  color: var(--color-white) !important;
+}
+
+.text-orange {
+  color: var(--color-orange) !important;
+}
+
+.text-purple {
+  color: var(--color-purple) !important;
+}
+
+.text-magenta {
+  color: var(--color-magenta) !important;
+}
+
+.text-dim {
+  color: var(--text-secondary) !important;
+}
+
+.text-label {
+  color: var(--text-label) !important;
+}
+
+.font-mono {
+  font-family: var(--font-mono) !important;
+}
+
+.font-digital {
+  font-family: var(--font-digital) !important;
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
+.text-sm {
+  font-size: 11px;
+}
+
+.text-xs {
+  font-size: 10px;
+}
+
+.text-lg {
+  font-size: 14px;
+}
+
+.text-xl {
+  font-size: 18px;
+}
+
+.text-2xl {
+  font-size: 24px;
+}
+
+.text-3xl {
+  font-size: 32px;
+}
+
+/* Info Row */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(0, 100, 180, 0.1);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: var(--text-label);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.info-value {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid;
+}
+
+.badge-up {
+  color: var(--color-up);
+  border-color: rgba(255, 50, 50, 0.4);
+  background: rgba(255, 50, 50, 0.1);
+}
+
+.badge-down {
+  color: var(--color-down);
+  border-color: rgba(0, 220, 0, 0.4);
+  background: rgba(0, 220, 0, 0.1);
+}
+
+.badge-neutral {
+  color: var(--color-yellow);
+  border-color: rgba(255, 220, 0, 0.4);
+  background: rgba(255, 220, 0, 0.1);
+}
+
+.badge-cyan {
+  color: var(--color-cyan);
+  border-color: rgba(0, 200, 255, 0.4);
+  background: rgba(0, 200, 255, 0.1);
+}
+
+/* Star Rating */
+.star-rating {
+  color: var(--color-yellow);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.star-empty {
+  color: var(--text-dim);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-neon);
+  border-radius: 2px;
+}

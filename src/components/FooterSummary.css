@@ -1,0 +1,36 @@
+/* FooterSummary.css */
+.footer-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px !important;
+  background: linear-gradient(90deg, rgba(0,150,255,0.08) 0%, rgba(0,50,100,0.15) 50%, rgba(0,150,255,0.08) 100%) !important;
+  border-color: var(--border-neon-bright) !important;
+}
+
+.footer-label {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--color-cyan);
+  padding: 4px 12px;
+  background: rgba(0,150,255,0.15);
+  border: 1px solid var(--border-neon);
+  border-radius: 4px;
+  letter-spacing: 2px;
+}
+
+.footer-text {
+  font-size: 12px;
+  color: var(--color-yellow);
+  font-weight: 600;
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.footer-dot {
+  font-size: 14px;
+  flex-shrink: 0;
+}

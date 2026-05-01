@@ -1,0 +1,248 @@
+/* ===================================================
+   App.css - Dashboard Flexbox Layout
+   Matching the template screenshot exactly
+   =================================================== */
+
+.dashboard {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 5px;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+/* === Header === */
+.db-header {
+  flex-shrink: 0;
+}
+
+.db-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.db-header-inner > .stock-search {
+  flex-shrink: 0;
+}
+
+.db-header-inner > .header {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(5, 10, 21, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.loading-spinner-lg {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(0, 200, 255, 0.2);
+  border-top-color: var(--color-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: var(--color-cyan);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-main);
+}
+
+/* Error Banner */
+.error-banner {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(255, 50, 50, 0.1);
+  border: 1px solid rgba(255, 50, 50, 0.4);
+  border-radius: 4px;
+  color: #ff6666;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.error-close {
+  background: none;
+  border: none;
+  color: #ff6666;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+
+/* Data Source Banner */
+.data-source-banner {
+  flex-shrink: 0;
+  padding: 6px 16px;
+  background: rgba(255, 220, 0, 0.08);
+  border: 1px solid rgba(255, 220, 0, 0.3);
+  border-radius: 4px;
+  color: var(--color-yellow);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* === Main Content === */
+.db-main {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Left Column: Chart + Main Force */
+.db-left-col {
+  flex: 0 0 52%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+.db-chart-wrap {
+  flex: 1;
+  min-height: 0;
+}
+
+.db-chart-wrap .kline-chart-container {
+  height: 100%;
+}
+
+.db-mf-row {
+  flex-shrink: 0;
+  height: 130px;
+}
+
+.db-mf-row .main-force-section {
+  height: 100%;
+}
+
+/* Right Column */
+.db-right-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Row A: Tech + Industry/Company */
+.db-row-a {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  min-height: 0;
+}
+
+.db-tech-wrap {
+  flex: 1.3;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.db-tech-wrap .panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.db-tech-wrap .panel-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.db-industry-company {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.db-industry-company .panel {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.db-industry-company .panel-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Row B: 2x2 Grid */
+.db-row-b {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  flex: 1;
+  min-height: 0;
+}
+
+.db-row-b .panel {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.db-row-b .panel-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* === Bottom Row === */
+.db-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr 1.6fr;
+  gap: 4px;
+  flex-shrink: 0;
+  max-height: 200px;
+}
+
+.db-bottom .panel {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.db-bottom .panel-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* === Footer === */
+.db-footer {
+  flex-shrink: 0;
+}
