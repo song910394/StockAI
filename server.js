@@ -196,12 +196,11 @@ app.get('/api/institutional/:code', async (req, res) => {
     const yyyymmdd = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
 
     const url = `https://www.twse.com.tw/fund/T86?response=json&date=${yyyymmdd}&selectType=ALL`;
-    const response = await fetch(url, {
+    const data = await fetchJsonSafe(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
     });
-    const data = await response.json();
 
     let result = {
       foreign: { buy: 0, sell: 0, net: 0 },
@@ -209,7 +208,7 @@ app.get('/api/institutional/:code', async (req, res) => {
       dealer: { buy: 0, sell: 0, net: 0 },
     };
 
-    if (data.stat === 'OK' && data.data) {
+    if (data && data.stat === 'OK' && data.data) {
       const stockRow = data.data.find(row => String(row[0]).trim() === code);
       if (stockRow) {
         const parseNum = (s) => parseInt(String(s).replace(/,/g, '')) || 0;
