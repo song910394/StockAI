@@ -253,7 +253,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // 所有其他非 API 請求，皆回傳 index.html 讓 React Router 處理 (SPA)
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
